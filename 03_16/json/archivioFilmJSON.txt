@@ -1,0 +1,1 @@
+[{"nome": "cicico", "anno": 2008, "guadagni": 2000000.0}, {"nome": "ciccio", "anno": 2010, "guadagni": 3000000.0}]

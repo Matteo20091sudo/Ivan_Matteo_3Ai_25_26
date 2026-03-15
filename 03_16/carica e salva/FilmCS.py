@@ -1,13 +1,16 @@
-#Realizzare un programma Python per collezionare i film 
-# visti. Memorizzare solo il nome del film. Fare in modo
-#  che si possa inserire, modificare, visualizzare e 
-# cancellare un film. Il programma deve anche salvare
-#  i film su file e ricaricarli all'avvio.
+#Realizzare un programma Python per collezionare i film visti. Memorizzare  il nome del film, 
+# l'anno di uscita e la cifra di incassi al botteghino. Fare in modo che si possa inserire, 
+# modificare, visualizzare e cancellare un film. Il programma deve anche salvare i film su 
+# file e ricaricarli all'avvio.
+ 
+#Provare a fare due funzioni salva e due funzioni carica. 
+#Una coppia carica/salva usa la strategia con separatore; 
+#una coppia carica/salva usa la strategia basata su json.
+ 
 
-NOME_FILE = "./03_12/film.txt"
+NOME_FILE = "./03_16/archivioFilm.txt"
 
 film = []
-
 def stampaMenu():
     print("---------ARCHIVIO-FILM--------")
     print("1. inserisci un nuovo film")
@@ -22,12 +25,20 @@ def stampaMenu():
 def carica():
     try:
         file = open(NOME_FILE, "r")
-        
+        risultato = []
         righe = file.read()
         righe = righe.split("\n")
         righe.pop(-1)
+        for r in righe:
+            info = r.split(";")
+            info = {"nome": info[0],
+                    "anno": info[1],
+                    "guadagni": info[2]}
+            risultato.append(info)
         file.close()
-        return righe
+        return risultato
+        
+        
     except:
         print("Impossibile caricare il file dell'archivio del film")
         return []   
@@ -36,7 +47,8 @@ def carica():
 def salva(l):
     file = open(NOME_FILE, "w")
     for f in l:
-        file.write(f + "\n")
+        riga = f"{f['nome']};{f['anno']};{f['guadagni']}"
+        file.write(riga + "\n")
     file.close()
 
 def inserisciFilm(l):
@@ -48,8 +60,32 @@ def inserisciFilm(l):
         elif nome in l:
             print("Film già presente")
         else:
-            l.append(nome)
             corretto = True
+    corretto = False
+    while not corretto:
+        try:
+            anno = int(input("Inserisci l'anno di uscita del film: "))
+            if anno<1900 or anno>2026:
+                print("Anno non valido")
+            else:
+                corretto = True
+        except:
+            print("Formato dell'anno non valido")
+    corretto = False
+    while not corretto:
+        try:
+            guadagni = float(input("Inserisci gli incassi al bottrghino del film: "))
+            if guadagni<0:
+                print("Guadagno non valido")
+            else:
+                corretto = True
+                film.append({
+                    "nome": nome,
+                    "anno": anno,
+                    "guadagni": guadagni
+                })
+        except:
+            print("Formato non valido")
         
 def visualizzaFilm(l):
     if len(l) == 0:
@@ -57,7 +93,7 @@ def visualizzaFilm(l):
     else:
         print("--------ARCHIVIO-FILM--------")
         for c,i in enumerate(l):
-            print(f"{c+1}. {i}")
+            print(f"{c+1}. nome: {i["nome"]}, anno di uscita: {i["anno"]}, incassi al botteghino: {i["guadagni"]}€")
     
 def modificaFilm(l):
     if len(l) == 0:
@@ -78,7 +114,7 @@ def modificaFilm(l):
                     if len(nuovoNome) < 2:
                         print("Ciò che hai inserito è troppo corto o vuoto")
                     else:
-                        l[indice] = nuovoNome
+                        l[indice]["nome"] = nuovoNome
                         corretto = True
             except:
                 print("Formato non valido")
